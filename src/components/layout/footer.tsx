@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, LockKeyhole } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { socialLinks } from "@/data/social-links";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const footerColumns = [
   {
@@ -62,14 +63,28 @@ export function Footer() {
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </p>
-          <motion.button
-            onClick={scrollToTop}
-            whileHover={{ y: -2 }}
-            className="flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
-            aria-label="Back to top"
-          >
-            Back to top <ArrowUp className="size-3.5" />
-          </motion.button>
+          <div className="flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/login"
+                  aria-label="Admin login"
+                  className="flex size-8 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <LockKeyhole className="size-3.5" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Admin login</TooltipContent>
+            </Tooltip>
+            <motion.button
+              onClick={scrollToTop}
+              whileHover={{ y: -2 }}
+              className="flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Back to top"
+            >
+              Back to top <ArrowUp className="size-3.5" />
+            </motion.button>
+          </div>
         </div>
       </div>
     </footer>

@@ -35,6 +35,35 @@ export async function sendContactEmail(data: Omit<ContactFormValues, "company">)
   });
 }
 
+export async function sendContactConfirmationEmail(data: Omit<ContactFormValues, "company">) {
+  const { name, email, subject, message } = data;
+  const firstName = name.trim().split(" ")[0] || name;
+
+  if (!resend) {
+    console.info("[contact] RESEND_API_KEY not set — skipping confirmation email.", {
+      email,
+    });
+    return { skipped: true };
+  }
+
+  return resend.emails.send({
+    from: `${siteConfig.name} <onboarding@resend.dev>`,
+    to: email,
+    replyTo: siteConfig.email,
+    subject: `Thanks for reaching out, ${firstName}!`,
+    html: `
+      <div style="font-family: sans-serif; line-height: 1.6;">
+        <p>Hi ${escapeHtml(firstName)},</p>
+        <p>Thanks for getting in touch — I've received your message and will get back to you within a day.</p>
+        <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
+        <p><strong>Your message:</strong></p>
+        <p>${escapeHtml(message).replace(/\n/g, "<br />")}</p>
+        <p>Talk soon,<br />${siteConfig.name}</p>
+      </div>
+    `,
+  });
+}
+
 function escapeHtml(value: string) {
   return value
     .replace(/&/g, "&amp;")
