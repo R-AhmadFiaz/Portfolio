@@ -67,7 +67,7 @@ export default function ContactPage() {
                     key={social.label}
                     href={social.href}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     aria-label={social.label}
                     className="flex size-9 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-colors hover:border-brand hover:text-brand"
                   >

@@ -38,7 +38,7 @@ const jsonLd = {
     "@type": "PostalAddress",
     addressLocality: siteConfig.location,
   },
-  sameAs: [siteConfig.links.github, siteConfig.links.linkedin, siteConfig.links.twitter],
+  sameAs: [siteConfig.links.github, siteConfig.links.linkedin],
 };
 
 export default function RootLayout({

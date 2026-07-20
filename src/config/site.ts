@@ -30,10 +30,8 @@ export const siteConfig = {
     "Web Developer Lahore",
   ],
   links: {
-    github: "https://github.com/ranaahmadfiaz",
-    linkedin: "https://linkedin.com/in/ranaahmadfiaz",
-    twitter: "https://twitter.com/ranaahmadfiaz",
-    instagram: "https://instagram.com/ranaahmadfiaz",
+    github: "https://github.com/R-AhmadFiaz",
+    linkedin: "https://www.linkedin.com/in/rana-ahmad-fiaz-60747237a/",
   },
   nav: [
     { label: "Home", href: "/" },

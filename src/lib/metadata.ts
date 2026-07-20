@@ -42,7 +42,6 @@ export function buildMetadata({
       title: pageTitle,
       description,
       images: [image],
-      creator: "@ranaahmadfiaz",
     },
   };
 }
