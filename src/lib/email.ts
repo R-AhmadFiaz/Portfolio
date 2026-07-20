@@ -17,7 +17,7 @@ export async function sendContactEmail(data: Omit<ContactFormValues, "company">)
     return { skipped: true };
   }
 
-  return resend.emails.send({
+  const result = await resend.emails.send({
     from: `Portfolio Contact <onboarding@resend.dev>`,
     to: siteConfig.email,
     replyTo: email,
@@ -33,6 +33,12 @@ export async function sendContactEmail(data: Omit<ContactFormValues, "company">)
       </div>
     `,
   });
+
+  if (result.error) {
+    console.error("[contact] Resend rejected the owner notification email:", result.error);
+  }
+
+  return result;
 }
 
 export async function sendContactConfirmationEmail(data: Omit<ContactFormValues, "company">) {
@@ -46,7 +52,7 @@ export async function sendContactConfirmationEmail(data: Omit<ContactFormValues,
     return { skipped: true };
   }
 
-  return resend.emails.send({
+  const result = await resend.emails.send({
     from: `${siteConfig.name} <onboarding@resend.dev>`,
     to: email,
     replyTo: siteConfig.email,
@@ -62,6 +68,12 @@ export async function sendContactConfirmationEmail(data: Omit<ContactFormValues,
       </div>
     `,
   });
+
+  if (result.error) {
+    console.error("[contact] Resend rejected the visitor confirmation email:", result.error);
+  }
+
+  return result;
 }
 
 function escapeHtml(value: string) {
