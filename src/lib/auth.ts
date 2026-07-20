@@ -2,8 +2,11 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { authConfig } from "@/lib/auth.config";
-import { loginSchema } from "@/lib/validations/auth";
+import { credentialsSchema } from "@/lib/validations/auth";
 import { prisma } from "@/lib/prisma";
+import { checkLoginRateLimit, getClientIp, recordLoginAttempt } from "@/lib/rate-limit";
+import { verifyRecaptcha } from "@/lib/recaptcha";
+import { RateLimitedError, RecaptchaFailedError } from "@/lib/auth-errors";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -12,16 +15,43 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: {},
         password: {},
+        recaptchaToken: {},
       },
-      async authorize(credentials) {
-        const parsed = loginSchema.safeParse(credentials);
-        if (!parsed.success) return null;
+      async authorize(credentials, request) {
+        const ip = getClientIp(request);
 
-        const { email, password } = parsed.data;
+        // Check the rate limit before doing anything else — an IP that's
+        // already over the threshold shouldn't get to spend a reCAPTCHA
+        // verification or a bcrypt compare on top of it.
+        const { limited } = await checkLoginRateLimit(ip);
+        if (limited) {
+          throw new RateLimitedError();
+        }
+
+        const parsed = credentialsSchema.safeParse(credentials);
+        if (!parsed.success) {
+          await recordLoginAttempt(ip, false);
+          return null;
+        }
+
+        const { email, password, recaptchaToken } = parsed.data;
+
+        // reCAPTCHA is verified — and can reject the login — before the
+        // password is ever checked, per the task's explicit requirement.
+        const recaptcha = await verifyRecaptcha(recaptchaToken, ip);
+        if (!recaptcha.success) {
+          await recordLoginAttempt(ip, false);
+          throw new RecaptchaFailedError();
+        }
+
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) return null;
+        if (!user) {
+          await recordLoginAttempt(ip, false);
+          return null;
+        }
 
         const passwordsMatch = await compare(password, user.passwordHash);
+        await recordLoginAttempt(ip, passwordsMatch);
         if (!passwordsMatch) return null;
 
         return { id: user.id, email: user.email, name: user.name };
