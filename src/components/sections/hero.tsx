@@ -66,9 +66,9 @@ export function Hero() {
             </Magnetic>
             <Magnetic>
               <Button asChild variant="outline" size="lg" className="rounded-full">
-                <a href="/resume.pdf" download>
+                <a href="/resume/Rana_Ahmad_Fiaz_Resume.pdf" download>
                   <Download className="mr-1.5 size-4" />
-                  Resume
+                  Download Resume
                 </a>
               </Button>
             </Magnetic>
