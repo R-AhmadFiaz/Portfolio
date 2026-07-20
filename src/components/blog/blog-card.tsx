@@ -28,6 +28,7 @@ export function BlogCard({ post, featured = false }: { post: BlogPost; featured?
                 month: "short",
                 day: "numeric",
                 year: "numeric",
+                timeZone: "UTC",
               })}
             </time>
             <span>·</span>
